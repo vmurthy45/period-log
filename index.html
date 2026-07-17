@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Period Log</title>
+<meta name="description" content="Personal period tracker — log cycles, see fertility predictions and trends.">
+<meta name="theme-color" content="#d6567c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Period Log">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <h1><span class="logo" aria-hidden="true"></span>Period Log</h1>
+    <button id="themeBtn" class="icon-btn" title="Theme" aria-label="Toggle theme">◐</button>
+  </header>
+
+  <main id="main">
+
+    <!-- CALENDAR -->
+    <section id="tab-cal" class="tab" hidden>
+      <div class="hero" id="hero">
+        <div class="hero-date" id="heroDate"></div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hs-v" id="heroPhase">—</div>
+            <div class="hs-l" id="heroPhaseSub"></div>
+          </div>
+          <div class="hero-stat">
+            <div class="hs-v" id="heroChance">—</div>
+            <div class="hs-l">chance of<br>getting pregnant</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hs-v" id="heroCycleDay">—</div>
+            <div class="hs-l">day of cycle</div>
+          </div>
+        </div>
+      </div>
+      <div class="cal-legend">
+        <span><i class="lg lg-period"></i>period</span>
+        <span><i class="lg lg-pred"></i>predicted</span>
+        <span><i class="lg lg-fertile"></i>fertile</span>
+        <span><i class="lg lg-ov"></i>ovulation</span>
+      </div>
+      <button class="btn ghost" id="earlierBtn">Show earlier months</button>
+      <div id="calendar"></div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="tab-dash" class="tab" hidden>
+      <div class="tiles" id="tiles"></div>
+      <div class="card" id="predCard">
+        <h3>Upcoming <span class="sub">predicted from your recent cycles</span></h3>
+        <div id="predBody"></div>
+      </div>
+      <div class="card chart-card">
+        <h3>Cycle length <span class="sub">days from one period start to the next</span></h3>
+        <div class="chart" id="chartCycle"></div>
+      </div>
+      <div class="card chart-card">
+        <h3>Period duration <span class="sub">days of bleeding per period</span></h3>
+        <div class="chart" id="chartDur"></div>
+      </div>
+      <div class="card" id="insightsCard">
+        <h3>Insights</h3>
+        <ul class="insights" id="insightsList"></ul>
+        <p class="hint">Predictions are estimates from your own history — not medical advice or contraception.</p>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="tab-history" class="tab" hidden>
+      <h2>Cycle history</h2>
+      <div class="card avg-card">
+        <div class="avg-row"><span>Avg cycle</span><strong id="avgCycleTxt">—</strong></div>
+        <div class="avg-row"><span>Avg duration</span><strong id="avgDurTxt">—</strong></div>
+      </div>
+      <div class="table-wrap card">
+        <table class="ptable">
+          <thead>
+            <tr><th>Start date</th><th>End date</th><th>Duration</th><th>Cycle</th></tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+      <p class="hint">Tap a row to edit or delete. Cycle = days since the previous period started.</p>
+    </section>
+
+    <!-- DATA -->
+    <section id="tab-data" class="tab" hidden>
+      <h2>Data</h2>
+      <div class="card">
+        <h3>Health profile <span class="sub">used to tune predictions</span></h3>
+        <form id="profileForm" autocomplete="off">
+          <div class="field">
+            <label for="pDob">Date of birth</label>
+            <input type="date" id="pDob">
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="pWeight">Weight (kg)</label>
+              <input type="number" id="pWeight" inputmode="decimal" min="20" max="300" step="0.1" placeholder="optional">
+            </div>
+            <div class="field">
+              <label for="pHeight">Height (cm)</label>
+              <input type="number" id="pHeight" inputmode="numeric" min="90" max="230" step="1" placeholder="optional">
+            </div>
+          </div>
+          <div class="field">
+            <label for="pLuteal">Luteal phase length (days) — ovulation is predicted this many days before each period</label>
+            <input type="number" id="pLuteal" inputmode="numeric" min="9" max="17" step="1" placeholder="14">
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="pCycleOv">Cycle length override</label>
+              <input type="number" id="pCycleOv" inputmode="numeric" min="15" max="60" step="1" placeholder="auto">
+            </div>
+            <div class="field">
+              <label for="pDurOv">Duration override</label>
+              <input type="number" id="pDurOv" inputmode="numeric" min="1" max="14" step="1" placeholder="auto">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn primary">Save profile</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Backup &amp; export</h3>
+        <p class="hint" id="dataSummary"></p>
+        <div class="stack">
+          <button class="btn primary" id="exportBtn">Download period CSV</button>
+          <button class="btn" id="shareBtn" hidden>Share CSV (save to OneDrive)</button>
+        </div>
+        <p class="hint">Your data lives on this device only — export now and then so a lost phone never means lost history.</p>
+      </div>
+      <div class="card">
+        <h3>Import</h3>
+        <p class="hint">Restore from a CSV with Start date / End date columns (replaces current data). Dates can be YYYY-MM-DD or DD/MM/YYYY.</p>
+        <input type="file" id="importFile" accept=".csv,text/csv" hidden>
+        <button class="btn" id="importBtn">Import CSV…</button>
+      </div>
+      <div class="card">
+        <h3>Danger zone</h3>
+        <div class="stack">
+          <button class="btn danger" id="wipeBtn">Erase all data</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="Sections">
+    <button data-tab="cal" class="on"><span class="ic">▦</span>Calendar</button>
+    <button data-tab="dash"><span class="ic">◔</span>Dashboard</button>
+    <button data-tab="history"><span class="ic">≡</span>History</button>
+    <button data-tab="data"><span class="ic">⇅</span>Data</button>
+  </nav>
+
+  <div id="sheetBack" class="sheet-back" hidden></div>
+  <div id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-grab" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <h3 id="sheetTitle"></h3>
+      <button class="icon-btn" id="sheetClose" aria-label="Close">✕</button>
+    </div>
+    <div id="sheetInfo" class="sheet-info"></div>
+    <div id="sheetActions" class="stack"></div>
+    <form id="editForm" autocomplete="off" hidden>
+      <div class="row2">
+        <div class="field">
+          <label for="eStart">Start date</label>
+          <input type="date" id="eStart" required>
+        </div>
+        <div class="field">
+          <label for="eEnd">End date</label>
+          <input type="date" id="eEnd" required>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn primary">Save changes</button>
+        <button type="button" class="btn danger" id="eDeleteBtn">Delete</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
