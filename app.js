@@ -11,7 +11,6 @@ let selected = null;        // ISO date shown in hero / sheet
 let calFrom = null;         // first rendered month "YYYY-MM"
 let editingPeriodId = null;
 let currentTab = "cal";
-let calScrolled = false;
 
 function load() {
   try {
@@ -165,7 +164,7 @@ function switchTab(name) {
   currentTab = name;
   document.querySelectorAll(".tab").forEach((s) => { s.hidden = s.id !== "tab-" + name; });
   document.querySelectorAll(".tabbar button").forEach((b) => b.classList.toggle("on", b.dataset.tab === name));
-  if (name === "cal") { renderCalendar(); updateHero(); }
+  if (name === "cal") { renderCalendar(); updateHero(); requestAnimationFrame(scrollToSelectedMonth); }
   if (name === "dash") renderDash();
   if (name === "history") renderHistory();
   if (name === "data") renderData();
@@ -228,11 +227,14 @@ function renderCalendar() {
     }
     box.appendChild(month);
   }
-  if (!calScrolled) {
-    calScrolled = true;
-    const cur = document.getElementById("m-" + monthKey(today));
-    if (cur) requestAnimationFrame(() => cur.scrollIntoView({ block: "start" }));
-  }
+}
+
+/* Put the selected date's month at the top of the view, just below the sticky hero. */
+function scrollToSelectedMonth() {
+  const m = document.getElementById("m-" + monthKey(selected || todayISO()));
+  if (!m) return;
+  const off = $("#hero").offsetHeight + 18;
+  window.scrollTo(0, m.getBoundingClientRect().top + window.scrollY - off);
 }
 
 function selectDay(iso) {

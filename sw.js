@@ -1,5 +1,5 @@
 /* Period Log service worker — precache the app shell so it opens with zero signal. */
-const CACHE = "periodlog-v1";
+const CACHE = "periodlog-v2";
 const ASSETS = [
   "./",
   "./index.html",
