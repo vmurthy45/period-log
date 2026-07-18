@@ -78,11 +78,18 @@ body {
   background: var(--series-1);
   position: relative;
 }
+/* 5-petal flower: one round pseudo-element cloned into petals via box-shadow */
 .logo::after {
-  content: ""; position: absolute; left: 50%; top: 54%;
-  width: 9px; height: 9px; border-radius: 50% 50% 50% 0;
-  transform: translate(-50%, -50%) rotate(-135deg);
-  background: #fff;
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 6.5px; height: 6.5px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  box-shadow:
+    0 -5px 0 #fff,
+    4.8px -1.5px 0 #fff,
+    2.9px 4px 0 #fff,
+    -2.9px 4px 0 #fff,
+    -4.8px -1.5px 0 #fff;
 }
 .icon-btn {
   border: 1px solid var(--border); background: var(--surface); color: var(--ink-2);
